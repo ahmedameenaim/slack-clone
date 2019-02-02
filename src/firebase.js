@@ -2,7 +2,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/storage';
 import 'firebase/auth';
 //   import 'firbase/database'
-//   require('firebase/database');
+  require('firebase/database');
 
 
 // Initialize Firebase
