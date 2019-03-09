@@ -70,7 +70,7 @@ class Register extends React.Component {
             this.setState({ errors: [], loading: true })
             try {
                 const createdUser = await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-                const updateUser = createdUser.user.updateProfile({
+                await createdUser.user.updateProfile({
                     displayName: this.state.username,
                     photoURL: `http://gravatar.com/avatar/${crypto.createHash('md5').update(createdUser.user.email).digest('hex')}/?d=identicon`
                 })
