@@ -15,7 +15,7 @@ const isImage = (message) => {
     return message.hasOwnProperty('image') && !message.hasOwnProperty('content');
 };
 
-const Message = ({ message, user }) => {
+const Message = ({ message , user }) => {
     return (
         <Comment>
             <Comment.Avatar src={message.user.avatar} />

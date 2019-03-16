@@ -2,6 +2,7 @@ import React from 'react';
 import { Segment, Button, Input } from 'semantic-ui-react'
 import firebase from '../../firebase';
 import FileModal from './filemodal';
+import ProgressBar from './progressbar';
 import uuidv4 from 'uuid/v4';
 
 
@@ -32,10 +33,18 @@ class MessageForm extends React.Component {
          })
     }
 
+    getPath = () => {
+        if (this.props.privateChannel) {
+          return `chat-private-${this.state.channel.id}`
+        }else {
+            return `chat-public`;
+        }
+    }
+
     fileUpload = (file , metadata) => {
      const pathToUpload = this.state.channel.id;
-     const ref = this.props.messagesRef;
-     const filePath = `chat/public/${uuidv4()}.jpg`;
+     const ref = this.props.getMessagesRef();
+     const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
 
      this.setState({
          uploadState: 'uploading',
@@ -88,12 +97,13 @@ class MessageForm extends React.Component {
 
     sendMessage = () => {
 
-        const { messagesRef } = this.props;
+        const { getMessagesRef} = this.props;
         const { message, channel } = this.state;
 
         if (message) {
             this.setState({ loading: true })
-            messagesRef.child(channel.id).push().set(this.createMessage())
+            getMessagesRef()
+            .child(channel.id).push().set(this.createMessage())
                 .then(() => {
                     console.log('Message was Sent!...')
                     this.setState({ loading: false, message: '', errors: [] })
@@ -107,7 +117,7 @@ class MessageForm extends React.Component {
     }
 
     render() {
-        const { errors ,message , loading , modal} = this.state;
+        const { errors ,message , loading , modal , uploadState , precentUploaded } = this.state;
         return (
             <Segment className="message__form">
                 <Input
@@ -135,18 +145,22 @@ class MessageForm extends React.Component {
 
                     <Button
                         color="teal"
+                        disabled = {uploadState === "uploading"}
                         content="Upload your Media"
                         labelPosition="right"
                         icon="cloud upload"
                         onClick = {this.openModal}
                     />
-                    <FileModal 
+                </Button.Group>
+                <FileModal 
                         modal = {modal}
                         closeModal = {this.closeModal}
                         fileUpload = {this.fileUpload}
                     />
-
-                </Button.Group>
+                    <ProgressBar 
+                        uploadState = {uploadState}
+                        precentUploaded = {precentUploaded}
+                    />
             </Segment>
         );
     }
